@@ -4,7 +4,7 @@ class LoggerConan(ConanFile):
     name = "logger"
     version = "1.0.0"
     license = "MIT"
-    url = "https://github.com/yourusername/logger"  # Замените на URL вашего репозитория GitHub
+    url = "https://github.com/maratnek/loglib"  # Замените на URL вашего репозитория GitHub
     description = "Logger"
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
