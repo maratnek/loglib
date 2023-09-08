@@ -148,6 +148,20 @@ inline const char* extractFileName(const char* filePath) {
 #define ERROR_LOG(message) LOG_MSG(error, message)
 #define CRITICAL_LOG(message) LOG_MSG(critical, message)
 
+#define TRACE_FUNCTION_ENTRY \
+do                           \
+{                            \
+  Logger::initialize();      \
+  TRACE_FUNCTION;            \
+} while (false)
+
+#define D_LOG_ST LogStream(Logger::get(), LogLevel::DEBUG)
+#define T_LOG_ST LogStream(Logger::get(), LogLevel::TRACE)
+#define I_LOG_ST LogStream(Logger::get(), LogLevel::INFO)
+#define W_LOG_ST LogStream(Logger::get(), LogLevel::WARN)
+#define E_LOG_ST LogStream(Logger::get(), LogLevel::ERROR)
+#define C_LOG_ST LogStream(Logger::get(), LogLevel::CRITICAL)
+
 } // namespace logger
 
 #endif // _LOGGER_HPP_

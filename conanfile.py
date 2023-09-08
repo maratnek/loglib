@@ -1,22 +1,23 @@
 from conans import ConanFile
-# from conan.tools.cmake import CMakeToolchain
 from conans import ConanFile, CMake, tools
 
 class LoggerConan(ConanFile):
     name = "logger"
-    version = "0.0.1"
+    version = "0.0.2"
     license = "MIT"
     url = "https://github.com/maratnek/loglib"  # Замените на URL вашего репозитория GitHub
+    package_type = "library"
     description = "Logger"
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake", "cmake_find_package" 
-    # , "cmake_find_package", "cmake_paths"
-    exports_sources = "logger.hpp", "logger.cpp", "CMakeLists.txt"     
+    exports_sources = "include/*", "src/*", "CMakeLists.txt"     
 
     # Binary configuration
-    settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "build_type": ["Debug", "Release"]}
+    default_options = {"shared": False, "build_type": "Debug"}
+
+    def build_id(self):
+        self.info_build.settings.build_type = "Any"
 
     def requirements(self):
         self.requires("spdlog/1.12.0")
@@ -31,16 +32,8 @@ class LoggerConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="src")  # Копируем заголовочные файлы
-        self.copy("*.a", dst="lib", keep_path=False)
-
-    # def generate(self):
-    #     tc = CMakeToolchain(self)
-    #     tc.generate()
-
-    # def package(self):
-        # cmake = CMake(self)
-        # cmake.install()
+        cmake = CMake(self)
+        cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = ["logger"]
