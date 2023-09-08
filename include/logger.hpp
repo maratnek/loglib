@@ -29,6 +29,15 @@ public:
                   fileName, lineNumber);
   }
 
+  void flush()
+  {
+    if (!logStream.str().empty())
+    {
+      log(logLevel, logStream.str());
+      logStream.str("");
+    }
+  }
+
   static void initialize() {
     static bool initialized = false;
     if (!initialized) {
@@ -107,10 +116,50 @@ public:
 
   static std::mutex& getMutex();
 
+  static void log(LogLevel level, const std::string &message)
+  {
+    initialize();
+    switch (level)
+    {
+    case LogLevel::DEBUG:
+      logger->debug(message);
+      break;
+    case LogLevel::TRACE:
+      logger->trace(message);
+      break;
+    case LogLevel::INFO:
+      logger->info(message);
+      break;
+    case LogLevel::WARN:
+      logger->warn(message);
+      break;
+    case LogLevel::ERROR:
+      logger->error(message);
+      break;
+    case LogLevel::CRITICAL:
+      logger->critical(message);
+      break;
+    default:
+      break;
+    }
+  }
+
+  std::ostringstream &getStream()
+  {
+    return logStream;
+  }
+
+  void setLevel(LogLevel level)
+  {
+    logLevel = level;
+  }
+
 private:
   const char *functionName;
   const char *fileName;
   int lineNumber;
+  std::ostringstream logStream;
+  LogLevel logLevel = LogLevel::INFO;
   static std::shared_ptr<spdlog::logger> logger;
 
 };
@@ -147,6 +196,29 @@ inline const char* extractFileName(const char* filePath) {
 #define WARN_LOG(message) LOG_MSG(warn, message)
 #define ERROR_LOG(message) LOG_MSG(error, message)
 #define CRITICAL_LOG(message) LOG_MSG(critical, message)
+
+// @class For stream logging 
+class LogStream {
+public:
+    LogStream(Logger& logger, LogLevel level)
+        : logger(logger), level(level) {
+    }
+
+    ~LogStream() {
+        logger.flush();
+    }
+
+    template <typename T>
+    LogStream& operator<<(const T& value) {
+        logger.setLogLevel(level);
+        logger.getStream() << value;
+        return *this;
+    }
+
+private:
+    Logger& logger;
+    LogLevel level;
+};
 
 #define TRACE_FUNCTION_ENTRY \
 do                           \

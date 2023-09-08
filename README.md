@@ -1,7 +1,15 @@
 # Easy logger
+## Command to create
+```bash
+$ mkdir build && cd build
+$ conan install ..
+$ conan build ..
+$ conan create .. maratnek/testing -pr debug --build missing
+```
 
 'base lib is using spdlog library'
 
+## Using 
 ```cpp
 using namespace logger;
 
