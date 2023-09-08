@@ -47,12 +47,12 @@ public:
             "logfile.log", true);
         auto console_sink =
             std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        // spdlog::set_pattern("[%H:%M:%S.%e] [%^%l%$] [File: %s] [Function: %!] "
-                            // "[Line: %!] [Thread: %t] %v");
         logger = std::make_shared<spdlog::logger>(
             "", spdlog::sinks_init_list({file_sink, console_sink}));
-        logger->set_pattern("[%^%L%$][%H:%M:%S.%e] "
-                            "[Thread: %t] %v");
+
+        // spdlog::set_pattern("[%H:%M:%S.%e] [%^%l%$] [File: %s] [Function: %!] "
+                            // "[Line: %!] [Thread: %t] %v");
+        logger->set_pattern("[%^%L%$][%H:%M:%S.%e] [Td: %t] %v");
 
         // Set the logger level based on the CMake LOG_LEVEL variable
 #ifdef LOG_LEVEL
