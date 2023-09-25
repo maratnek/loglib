@@ -38,7 +38,7 @@ public:
     }
   }
 
-  static void initialize() {
+  static void initialize(std::string const& pattern = "") {
     static bool initialized = false;
     if (!initialized) {
       std::lock_guard<std::mutex> lock(Logger::getMutex());
@@ -52,7 +52,12 @@ public:
 
         // spdlog::set_pattern("[%H:%M:%S.%e] [%^%l%$] [File: %s] [Function: %!] "
                             // "[Line: %!] [Thread: %t] %v");
-        logger->set_pattern("[%^%L%$][%H:%M:%S.%e] [Td: %t] %v");
+        // logger->set_pattern("[%^%L%$][%H:%M:%S.%e] [Td: %t] %v");
+        if (pattern.empty()) {
+          logger->set_pattern("[%^%L%$][%H:%M:%S.%e] [Td: %t] %v");
+        } else {
+          logger->set_pattern(pattern);
+        }
 
         // Set the logger level based on the CMake LOG_LEVEL variable
 #ifdef LOG_LEVEL
@@ -166,19 +171,6 @@ private:
 
 #define TRACE_FUNCTION Logger loggerInstance(__FUNCTION__, __FILE__, __LINE__);
 
-#define LOG_MSG(level, message)                                   \
-do                                                                \
-{                                                                 \
-  std::ostringstream logStream;                                   \
-  logStream << message;                                           \
-  {                                                               \
-    std::lock_guard<std::mutex> lock(logger::Logger::getMutex()); \
-    logger::Logger::get()->level(logStream.str());                \
-  }                                                               \
-} while (false)
-
-// logStream << "[" << extractFileName(__FILE__) << ":" << __LINE__ << " " << __FUNCTION__ << "] " << message; \
-
 // Function to extract the file name from the full path
 inline const char* extractFileName(const char* filePath) {
     const char* fileName = strrchr(filePath, '/');
@@ -189,6 +181,19 @@ inline const char* extractFileName(const char* filePath) {
         return fileName ? fileName + 1 : filePath;
     }
 }
+
+#define LOG_MSG(level, message)                                                                               \
+do                                                                                                            \
+{                                                                                                             \
+  std::ostringstream logStream;                                                                               \
+  logStream << "[" << extractFileName(__FILE__) << ":" << __LINE__ << " " << __FUNCTION__ << "] " << message; \
+  {                                                                                                           \
+    std::lock_guard<std::mutex> lock(logger::Logger::getMutex());                                             \
+    logger::Logger::get()->level(logStream.str());                                                            \
+  }                                                                                                           \
+} while (false)
+
+  // logStream << message;                                                                                       \
 
 #define DEBUG_LOG(message) LOG_MSG(debug, message)
 #define TRACE_LOG(message) LOG_MSG(trace, message)

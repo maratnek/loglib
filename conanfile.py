@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class LoggerConan(ConanFile):
     name = "logger"
-    version = "0.0.4"
+    version = "0.1.2"
     license = "MIT"
     url = "https://github.com/maratnek/loglib"  # Замените на URL вашего репозитория GitHub
     package_type = "library"
