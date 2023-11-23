@@ -38,17 +38,28 @@ public:
     }
   }
 
-  static void initialize(std::string const& pattern = "") {
+  static void initialize(bool bFile = true, bool bConsole = true, std::string const& pattern = "") {
     static bool initialized = false;
     if (!initialized) {
       std::lock_guard<std::mutex> lock(Logger::getMutex());
       if (!initialized) {
+        spdlog::sinks_init_list sinks;
         auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             "logfile.log", true);
         auto console_sink =
             std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+
+        if (bFile && bConsole) {
+          sinks = spdlog::sinks_init_list({file_sink, console_sink});
+        } else if (bFile) {
+          sinks = spdlog::sinks_init_list({file_sink});
+        } else if (bConsole) {
+          sinks = spdlog::sinks_init_list({console_sink});
+        }
+
+
         logger = std::make_shared<spdlog::logger>(
-            "", spdlog::sinks_init_list({file_sink, console_sink}));
+            "", sinks);
 
         // spdlog::set_pattern("[%H:%M:%S.%e] [%^%l%$] [File: %s] [Function: %!] "
                             // "[Line: %!] [Thread: %t] %v");

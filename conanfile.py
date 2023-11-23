@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class LoggerConan(ConanFile):
     name = "logger"
-    version = "0.1.2"
+    version = "0.2.2"
     license = "MIT"
     url = "https://github.com/maratnek/loglib"  # Замените на URL вашего репозитория GitHub
     package_type = "library"
@@ -13,8 +13,8 @@ class LoggerConan(ConanFile):
     exports_sources = "include/*", "src/*", "CMakeLists.txt"     
 
     # Binary configuration
-    options = {"shared": [True, False], "build_type": ["Debug", "Release"]}
-    default_options = {"shared": False, "build_type": "Debug"}
+    # options = {"shared": [True, False], "build_type": ["Debug", "Release"]}
+    # default_options = {"shared": False, "build_type": "Debug"}
 
     def build_id(self):
         self.info_build.settings.build_type = "Any"
@@ -27,9 +27,13 @@ class LoggerConan(ConanFile):
             del self.options.fPIC
 
     def build(self):
-        cmake = CMake(self)
-        cmake.configure()
-        cmake.build()
+        cmake_release = CMake(self, build_type="Release")
+        cmake_release.configure()
+        cmake_release.build()
+
+        cmake_debug = CMake(self, build_type="Debug")
+        cmake_debug.configure()
+        cmake_debug.build()
 
     def package(self):
         cmake = CMake(self)
